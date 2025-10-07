@@ -18,7 +18,25 @@ export async function getProdutos(req: Request, res: Response) {
     res.status(500).json({ error: "Erro ao buscar produtos" });
   }
 }
+export async function getOculosEscuros(req: Request, res: Response) {
+  try {
+  const produtos = await sql`
+    SELECT 
+    p.nome,
+    p.marca,
+    p.preco,
+    c.nome as categoria,
+    p.destaque
+    FROM produtos p
+  JOIN categorias c ON p.categoria_id = c.id  
+  WHERE p.categoria_id = 2;`
 
+    return res.json(produtos);
+  }catch (error) {
+    console.error("Erro ao buscar produtos:", error);
+  }
+  
+}
 
 
 export async function getProdutoById(id: number) {
