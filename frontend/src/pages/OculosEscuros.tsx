@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import type { Produto } from "../../../backend/src/types/product";
 
 
-export default function Home() {
+export default function OculosEscuros() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
 
   useEffect(() => {
     async function fetchProdutos() {
       try {
-        const dados = await fetch("http://localhost:3001/api/produtos");
+        const dados = await fetch("http://localhost:3001/api/produtos/oculos-escuros");
         const dadosJson = await dados.json();
         setProdutos(dadosJson);
         
@@ -24,10 +24,10 @@ export default function Home() {
      {/* Título e Descrição */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-yellow-700 mb-4">
-          Nossos Produtos
+            Óculos Escuros
         </h1>
         <p className="text-lg text-yellow-900 max-w-2xl mx-auto">
-          Descubra nossa coleção completa de óculos, lentes e acessórios com a melhor qualidade e design.
+          Descubra nossa coleção completa de óculos escuros.
         </p>
       </div>
 

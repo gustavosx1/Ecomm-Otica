@@ -6,4 +6,6 @@ const router = express.Router();
 router.get("/produtos", getProdutos);
 router.get("/produtos/oculos-escuros", getOculosEscuros);
 
+
+
 export default router;
