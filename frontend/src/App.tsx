@@ -7,6 +7,7 @@ import Contact from "./pages/Contact.tsx";
 import Home from "./pages/Home.tsx";
 import OculosEscuros from "./pages/OculosEscuros.tsx";
 import Search from "./pages/Search.tsx";
+import Product from "./pages/Product.tsx";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
               <Route path="/Contact" element={<Contact />} />
               <Route path ="/Oculos-Escuros" element={<OculosEscuros/>}></Route>
               <Route path ="/Search" element={<Search/>}></Route>
+              <Route path ="/Product" element={<Product/>}></Route>
           </Routes>
     </DefaultLayout>
   );

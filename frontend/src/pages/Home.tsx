@@ -1,14 +1,25 @@
 import { useEffect, useState } from "react";
 import type { Produto } from "../../../backend/src/types/product";
+import { useNavigate } from "react-router-dom";
+
+
 
 
 export default function Home() {
+
+  const navigate = useNavigate();
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const url = "http://localhost:3001/api/produtos";
+  
+  const showDetails = (product: Produto) =>{
+    navigate("/Product", { state:  product  })
+}
+
 
   useEffect(() => {
     async function fetchProdutos() {
       try {
-        const dados = await fetch("http://localhost:3001/api/produtos");
+        const dados = await fetch(url);
         const dadosJson = await dados.json();
         setProdutos(dadosJson);
         
@@ -33,21 +44,26 @@ export default function Home() {
 
       {/* Grid de Produtos */}
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {produtos.map(produtos => (
+        {produtos.map(p => (
           <div
-            key={produtos.id}
+            key={p.id}
             className="bg-white border border-yellow-300 rounded-xl shadow-lg p-6 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300"
           >
             <img
               //src={produtos.imagem}
-              alt={produtos.nome}
+              alt={p.nome}
               className="h-40 w-40 object-cover rounded-lg mb-4 border-4 border-yellow-400"
             />
-            <h3 className="text-xl font-semibold text-yellow-800 mb-2">{produtos.nome}</h3>
-            <p className="text-yellow-700 font-bold text-lg mb-4">R${produtos.preco}</p>
-            <button className="bg-yellow-400 text-white font-semibold px-6 py-2 rounded-full hover:bg-yellow-500 transition-colors">
-              Comprar
+            <h3 className="text-xl font-semibold text-yellow-800 mb-2">{p.nome}</h3>
+            <p className="text-yellow-700 font-bold text-lg mb-4">R${p.preco}</p>
+            
+              <button className="bg-yellow-400 text-white font-semibold px-6 py-2 rounded-full hover:bg-yellow-500 transition-colors" onClick={() => showDetails(p)}>
+              Mais Detalhes
             </button>
+
+            
+            
+            
           </div>
         ))}
       </div>

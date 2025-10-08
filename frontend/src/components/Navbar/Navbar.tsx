@@ -11,6 +11,12 @@ export default function Navbar() {
   const [termoBusca, setTermoBusca] = useState("");
   const navigate = useNavigate();
 
+  const handleSearch = () => {
+    if (termoBusca.trim()) {
+      navigate("/Search", { state: { termoBusca } });
+    }
+  }
+
   return (
     <nav className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
           <div className="max-w-5x2 mx-auto px-4 flex items-center justify-between h-20">
@@ -37,10 +43,10 @@ export default function Navbar() {
                       type="text"
                       placeholder="Buscar produto..."
                       className="border border-yellow-300 rounded-full px-4 py-1 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                      value={termoBusca}
+                      value={(termoBusca)}
                       onChange={e => setTermoBusca(e.target.value)}
                     />
-                    <button className="ml-2" onClick={() =>navigate("/Search", { state: { termoBusca } })}>
+                    <button className="ml-2" onClick={() => handleSearch()}>
                       <SearchIcon size={25} className="text-gray-700 hover:text-amber-600 transition-colors duration-200" />
                     </button>
                   </div>
