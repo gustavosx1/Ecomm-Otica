@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Menu, X, ShoppingCart, SearchIcon} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-
-
+import { useCart } from "../../hooks/useCart";
 
 import logo from "../Assets/images/logo.jpg";
 
@@ -10,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [termoBusca, setTermoBusca] = useState("");
   const navigate = useNavigate();
+  const { totalItens } = useCart();
 
   const handleSearch = () => {
     if (termoBusca.trim()) {
@@ -51,7 +51,7 @@ export default function Navbar() {
                     </button>
                   </div>
                   {/*Resto da Navar*/}
-                  <li><Link to="/" className="hover:text-amber-600">Home</Link></li>
+                  <li><Link to="/" className="hover:text-amber-600">Página Principal</Link></li>
                 <li><a href="#masculino" className="hover:text-amber-600">Masculino</a></li>
                 <li><a href="#feminino" className="hover:text-amber-600">Feminino</a></li>
                 <li><a href="#infantil" className="hover:text-amber-600">Infantil</a></li>
@@ -64,8 +64,13 @@ export default function Navbar() {
 
             {/* Ícone do Carrinho */}
             <div className="flex items-center justify-end flex-shrink-0">
-          <Link to="/carrinho" className="ml-4">
+          <Link to="/carrinho" className="ml-4 relative">
             <ShoppingCart size={32} className="text-gray-700 hover:text-amber-600 transition-colors duration-200" />
+            {totalItens > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {totalItens}
+              </span>
+            )}
           </Link>
 
 
@@ -86,7 +91,7 @@ export default function Navbar() {
               <div className="md:hidden bg-white border-t shadow-md">
                   <ul className="flex flex-col p-4 space-y-4 font-medium text-gray-700">
                     <li><Link to="/" className="hover:text-amber-600"><SearchIcon size={25} className="text-gray-700 hover:text-amber-600 transition-colors duration-200" /></Link></li>
-                <li><Link to="/" className="hover:text-amber-600">Home</Link></li>
+                <li><Link to="/" className="hover:text-amber-600">Página Principal</Link></li>
                 <li><a href="#masculino" className="hover:text-amber-600">Masculino</a></li>
                 <li><a href="#feminino" className="hover:text-amber-600">Feminino</a></li>
                 <li><a href="#infantil" className="hover:text-amber-600">Infantil</a></li>

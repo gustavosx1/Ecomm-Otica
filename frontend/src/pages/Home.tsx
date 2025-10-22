@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import type { Produto } from "../../../backend/src/types/product";
 import { useNavigate } from "react-router-dom";
-
-
-
+import { useCart } from "../hooks/useCart";
+import { ShoppingCart } from "lucide-react";
 
 export default function Home() {
 
   const navigate = useNavigate();
+  const { adicionarItem } = useCart();
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const url = "http://localhost:3001/api/produtos";
   
@@ -57,13 +57,24 @@ export default function Home() {
             <h3 className="text-xl font-semibold text-yellow-800 mb-2">{p.nome}</h3>
             <p className="text-yellow-700 font-bold text-lg mb-4">R${p.preco}</p>
             
-              <button className="bg-yellow-400 text-white font-semibold px-6 py-2 rounded-full hover:bg-yellow-500 transition-colors" onClick={() => showDetails(p)}>
-              Mais Detalhes
-            </button>
-
-            
-            
-            
+            <div className="flex flex-col gap-2 w-full">
+              <button 
+                className="bg-yellow-400 text-white font-semibold px-6 py-2 rounded-full hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2" 
+                onClick={() => {
+                  adicionarItem(p);
+                }}
+              >
+                <ShoppingCart size={18} />
+                Adicionar ao Carrinho
+              </button>
+              
+              <button 
+                className="bg-white border-2 border-yellow-400 text-yellow-700 font-semibold px-6 py-2 rounded-full hover:bg-yellow-50 transition-colors" 
+                onClick={() => showDetails(p)}
+              >
+                Mais Detalhes
+              </button>
+            </div>
           </div>
         ))}
       </div>
