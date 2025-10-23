@@ -70,7 +70,7 @@ export default function Home() {
               className="h-40 w-40 object-cover rounded-lg mb-4 border-4 border-yellow-400"
             />
             <h3 className="text-xl font-semibold text-yellow-800 mb-2">{p.nome}</h3>
-            <p className="text-yellow-700 font-bold text-lg mb-4">R${p.preco}</p>
+            <p className="text-yellow-700 font-bold text-lg mb-4">R${p.preco.toFixed(2)}</p>
             
             <div className="flex flex-col gap-2 w-full">
               <button 
