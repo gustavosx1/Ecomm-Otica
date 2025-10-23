@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, type ReactNode } from "react";
-import type { Produto } from "../../../backend/src/types/product";
+import type { Produto } from "../types/product";
 
 export type CartItem = {
   id: number;
@@ -63,7 +63,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const novoItem: CartItem = {
           id: produto.id,
           nome: produto.nome,
-          preco: Number(produto.preco) || 0,
+          preco: produto.preco,
           quantidade,
           imagem: produto.imagem || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=400&q=80",
           categoria_nome: produto.categoria_nome,

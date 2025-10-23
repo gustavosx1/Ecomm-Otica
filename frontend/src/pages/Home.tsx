@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Produto } from "../../../backend/src/types/product";
+import type { Produto, ProductFromAPI } from "../types/product";
+import { adaptProductFromAPI } from "../types/product";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import { ShoppingCart } from "lucide-react";
@@ -20,8 +21,10 @@ export default function Home() {
     async function fetchProdutos() {
       try {
         const dados = await fetch(url);
-        const dadosJson = await dados.json();
-        setProdutos(dadosJson);
+        const dadosJson: ProductFromAPI[] = await dados.json();
+        // Converte os dados da API para o formato do frontend
+        const produtosAdaptados = dadosJson.map(adaptProductFromAPI);
+        setProdutos(produtosAdaptados);
         
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
@@ -29,6 +32,18 @@ export default function Home() {
     }
     fetchProdutos();
   }, []);
+
+  // Se a API retornar vazio, mostra mensagem
+  if (produtos.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white py-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-yellow-800 mb-2">Nenhum produto disponível</h2>
+          <p className="text-yellow-700">Tente novamente mais tarde.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white py-8">

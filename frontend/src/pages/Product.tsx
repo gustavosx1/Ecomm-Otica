@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
-import type { Produto } from "../../../backend/src/types/product";
+import type { Produto } from "../types/product";
 import { useCart } from "../hooks/useCart";
 
 export default function Product() {

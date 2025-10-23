@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Produto } from "../../../backend/src/types/product";
+import type { Produto, ProductFromAPI } from "../types/product";
+import { adaptProductFromAPI } from "../types/product";
 import { useLocation } from "react-router-dom";
 import { SearchX } from "lucide-react";
 
@@ -18,8 +19,9 @@ export default function Search() {
     async function fetchProdutos() {
       try {
         const dados = await fetch("http://localhost:3001/api/produtos");
-        const dadosJson = await dados.json();
-        setProdutos(dadosJson);
+        const dadosJson: ProductFromAPI[] = await dados.json();
+        const produtosAdaptados = dadosJson.map(adaptProductFromAPI);
+        setProdutos(produtosAdaptados);
         
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
