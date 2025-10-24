@@ -4,12 +4,15 @@ import { adaptProductFromAPI } from "../types/product";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import { ShoppingCart } from "lucide-react";
+import Loading from "../components/Loading/Loading";
+import EmptyState from "../components/EmptyState/EmptyState";
 
 export default function Home() {
 
   const navigate = useNavigate();
   const { adicionarItem } = useCart();
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [loading, setLoading] = useState(true);
   const url = "http://localhost:3001/api/produtos";
   
   const showDetails = (product: Produto) =>{
@@ -20,6 +23,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchProdutos() {
       try {
+        setLoading(true);
         const dados = await fetch(url);
         const dadosJson: ProductFromAPI[] = await dados.json();
         // Converte os dados da API para o formato do frontend
@@ -28,21 +32,21 @@ export default function Home() {
         
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchProdutos();
   }, []);
 
-  // Se a API retornar vazio, mostra mensagem
-  if (produtos.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white py-8">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold text-yellow-800 mb-2">Nenhum produto disponível</h2>
-          <p className="text-yellow-700">Tente novamente mais tarde.</p>
-        </div>
-      </div>
-    );
+  // Tela de carregamento
+  if (loading) {
+    return <Loading message="Carregando produtos..." />;
+  }
+
+  // Se a API retornar vazio após carregar, mostra mensagem
+  if (!loading && produtos.length === 0) {
+    return <EmptyState />;
   }
 
   return (

@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import type { Produto, ProductFromAPI } from "../types/product";
 import { adaptProductFromAPI } from "../types/product";
-
+import Loading from "../components/Loading/Loading";
+import EmptyState from "../components/EmptyState/EmptyState";
 
 export default function OculosEscuros() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchProdutos() {
       try {
+        setLoading(true);
         const dados = await fetch("http://localhost:3001/api/produtos/oculos-escuros");
         const dadosJson: ProductFromAPI[] = await dados.json();
         const produtosAdaptados = dadosJson.map(adaptProductFromAPI);
@@ -16,10 +19,22 @@ export default function OculosEscuros() {
         
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchProdutos();
   }, []);
+
+  // Tela de carregamento
+  if (loading) {
+    return <Loading message="Carregando óculos escuros..." />;
+  }
+
+  // Se não houver produtos após carregar
+  if (!loading && produtos.length === 0) {
+    return <EmptyState title="Nenhum óculos escuro disponível" />;
+  }
 
   return (
     <div className="min-h-screen bg-white py-8">
