@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Menu, X, ShoppingCart, SearchIcon} from "lucide-react";
+import { Menu, X, ShoppingCart, SearchIcon, User, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../hooks/useCart";
+import { useAuth } from "../../contexts/AuthContext";
+import { useCategories } from "../../hooks/useProducts";
 
 import logo from "../Assets/images/logo.jpg";
 
@@ -10,10 +12,21 @@ export default function Navbar() {
   const [termoBusca, setTermoBusca] = useState("");
   const navigate = useNavigate();
   const { totalItens } = useCart();
+  const { user, signOut } = useAuth();
+  const { categories } = useCategories();
 
   const handleSearch = () => {
     if (termoBusca.trim()) {
       navigate("/Search", { state: { termoBusca } });
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
     }
   }
 
@@ -50,21 +63,54 @@ export default function Navbar() {
                       <SearchIcon size={25} className="text-gray-700 hover:text-amber-600 transition-colors duration-200" />
                     </button>
                   </div>
-                  {/*Resto da Navar*/}
+                  {/*Resto da Navbar*/}
                   <li><Link to="/" className="hover:text-amber-600">Página Principal</Link></li>
-                <li><a href="#masculino" className="hover:text-amber-600">Masculino</a></li>
-                <li><a href="#feminino" className="hover:text-amber-600">Feminino</a></li>
-                <li><a href="#infantil" className="hover:text-amber-600">Infantil</a></li>
-                <li><a href="/Oculos-Escuros" className="hover:text-amber-600">Óculos Escuros</a></li>
-                <li><Link to="/Contact" className="hover:text-amber-600">Contato</Link></li>
-                <li><Link to="/About" className="hover:text-amber-600">Sobre</Link></li>
+                  
+                  {/* Categorias dinâmicas */}
+                  {categories.slice(0, 4).map(category => (
+                    <li key={category.id}>
+                      <Link to={`/categoria/${category.slug}`} className="hover:text-amber-600 capitalize">
+                        {category.name}
+                      </Link>
+                    </li>
+                  ))}
+                  
+                  <li><Link to="/Contact" className="hover:text-amber-600">Contato</Link></li>
+                  <li><Link to="/About" className="hover:text-amber-600">Sobre</Link></li>
 
               </ul>
               </div>
 
-            {/* Ícone do Carrinho */}
-            <div className="flex items-center justify-end flex-shrink-0">
-          <Link to="/carrinho" className="ml-4 relative">
+            {/* Ícone do Carrinho e Auth */}
+            <div className="flex items-center justify-end flex-shrink-0 space-x-4">
+          
+          {/* Auth buttons */}
+          {user ? (
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600 hidden md:block">
+                Olá, {user.email?.split('@')[0]}
+              </span>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center space-x-1 text-gray-700 hover:text-amber-600 transition-colors duration-200"
+              >
+                <LogOut size={20} />
+                <span className="hidden md:block">Sair</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Link
+                to="/login"
+                className="flex items-center space-x-1 text-gray-700 hover:text-amber-600 transition-colors duration-200"
+              >
+                <User size={20} />
+                <span className="hidden md:block">Entrar</span>
+              </Link>
+            </div>
+          )}
+
+          <Link to="/carrinho" className="relative">
             <ShoppingCart size={32} className="text-gray-700 hover:text-amber-600 transition-colors duration-200" />
             {totalItens > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
@@ -114,16 +160,3 @@ export default function Navbar() {
       </nav>
   );
 }
-
-
-/*<nav className="flex gap-4 p-4 bg-slate-800 text-white">
-        <Link to="/">Home</Link>
-        <Link to="/about">Sobre</Link>
-        <Link to="/Contact">Contato</Link>
-      </nav>
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/Contact" element={<Contact />} />
-      </Routes>*/

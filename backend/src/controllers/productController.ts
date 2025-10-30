@@ -1,53 +1,174 @@
-import type { Request, Response } from "express";
-import sql from "../database/connetion.js";
+import type { Request, Response } from 'express';
+import supabase from '../database/supabase.js';
 
-export async function getProdutos(req: Request, res: Response) { 
+export const getProducts = async (req: Request, res: Response) => {
   try {
-    const produtos = await sql`
-      SELECT 
-        p.*, 
-        c.name as categoria_nome 
-      FROM products p 
-      JOIN categories c ON p.category_id = c.id 
-      WHERE p.stock_quantity > 0
-    `;
-    return res.json(produtos);
-  } catch (error) {
-    console.error("Erro ao buscar produtos:", error);
-    return res.status(500).json({ error: "Erro ao buscar produtos" });
-  }
-}
-export async function getOculosEscuros(req: Request, res: Response) {
-  try {
-    const produtos = await sql`
-      SELECT 
-        p.id,
-        p.name,
-        p.description,
-        p.price,
-        p.image_url,
-        p.stock_quantity,
-        c.name as categoria
-      FROM products p
-      JOIN categories c ON p.category_id = c.id  
-      WHERE p.category_id = 2 AND p.stock_quantity > 0
-    `;
-    return res.json(produtos);
-  } catch (error) {
-    console.error("Erro ao buscar óculos escuros:", error);
-    return res.status(500).json({ error: "Erro ao buscar óculos escuros" });
-  }
-}
+    const { data: products, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        categories (
+          id,
+          name,
+          slug
+        )
+      `);
 
+    if (error) {
+      console.error('Error fetching products:', error);
+      return res.status(500).json({ error: 'Error fetching products' });
+    }
 
-export async function getProdutoById(id: number) {
-  try {
-    const produto = await sql`
-      SELECT * FROM products WHERE id = ${id}
-    `;
-    return produto[0] ?? null;
+    res.json(products);
   } catch (error) {
-    console.error("Erro ao buscar produto:", error);
-    return null;
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
+
+export const getProductById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    const { data: product, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        categories (
+          id,
+          name,
+          slug
+        )
+      `)
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      console.error('Error fetching product:', error);
+      return res.status(500).json({ error: 'Error fetching product' });
+    }
+
+    res.json(product);
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const getProductsByCategory = async (req: Request, res: Response) => {
+  try {
+    const { category } = req.params;
+    
+    const { data: products, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        categories (
+          id,
+          name,
+          slug
+        )
+      `)
+      .eq('categories.slug', category);
+
+    if (error) {
+      console.error('Error fetching products by category:', error);
+      return res.status(500).json({ error: 'Error fetching products' });
+    }
+
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching products by category:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const createProduct = async (req: Request, res: Response) => {
+  try {
+    const { name, description, price, category_id, image_url, stock } = req.body;
+
+    const { data: product, error } = await supabase
+      .from('products')
+      .insert([
+        {
+          name,
+          description,
+          price,
+          category_id,
+          image_url,
+          stock
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating product:', error);
+      return res.status(400).json({ error: 'Error creating product' });
+    }
+
+    res.status(201).json(product);
+  } catch (error) {
+    console.error('Error creating product:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, description, price, category_id, image_url, stock } = req.body;
+
+    const { data: product, error } = await supabase
+      .from('products')
+      .update({
+        name,
+        description,
+        price,
+        category_id,
+        image_url,
+        stock,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      console.error('Error updating product:', error);
+      return res.status(400).json({ error: 'Error updating product' });
+    }
+
+    res.json(product);
+  } catch (error) {
+    console.error('Error updating product:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting product:', error);
+      return res.status(400).json({ error: 'Error deleting product' });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

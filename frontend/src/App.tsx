@@ -5,10 +5,12 @@ import { Route, Routes } from "react-router-dom";
 import About from "./pages/About.tsx";
 import Contact from "./pages/Contact.tsx";
 import Home from "./pages/Home.tsx";
-import OculosEscuros from "./pages/OculosEscuros.tsx";
 import Search from "./pages/Search.tsx";
 import Product from "./pages/Product.tsx";
 import Cart from "./pages/Cart.tsx";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import CategoryPage from "./pages/CategoryPage.tsx";
 
 
 function App() {
@@ -24,10 +26,12 @@ function App() {
               <Route path="/" element={<Home/>}></Route>
               <Route path="/about" element={<About />} />
               <Route path="/Contact" element={<Contact />} />
-              <Route path ="/Oculos-Escuros" element={<OculosEscuros/>}></Route>
               <Route path ="/Search" element={<Search/>}></Route>
               <Route path ="/Product" element={<Product/>}></Route>
               <Route path="/carrinho" element={<Cart />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/categoria/:slug" element={<CategoryPage />} />
           </Routes>
     </DefaultLayout>
   );

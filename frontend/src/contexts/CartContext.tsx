@@ -2,7 +2,7 @@ import { createContext, useEffect, useState, type ReactNode } from "react";
 import type { Produto } from "../types/product";
 
 export type CartItem = {
-  id: number;
+  id: number | string;
   nome: string;
   preco: number;
   quantidade: number;
@@ -13,8 +13,8 @@ export type CartItem = {
 type CartContextType = {
   itens: CartItem[];
   adicionarItem: (produto: Produto, quantidade?: number) => void;
-  removerItem: (id: number) => void;
-  atualizarQuantidade: (id: number, quantidade: number) => void;
+  removerItem: (id: number | string) => void;
+  atualizarQuantidade: (id: number | string, quantidade: number) => void;
   limparCarrinho: () => void;
   totalItens: number;
   total: number;
@@ -73,11 +73,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removerItem = (id: number) => {
+  const removerItem = (id: number | string) => {
     setItens((prevItens) => prevItens.filter((item) => item.id !== id));
   };
 
-  const atualizarQuantidade = (id: number, quantidade: number) => {
+  const atualizarQuantidade = (id: number | string, quantidade: number) => {
     if (quantidade < 1) return;
     setItens((prevItens) =>
       prevItens.map((item) =>

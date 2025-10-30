@@ -1,51 +1,39 @@
-import { useEffect, useState } from "react";
-import type { Produto, ProductFromAPI } from "../types/product";
-import { adaptProductFromAPI } from "../types/product";
+import { useMemo } from "react";
+import type { Produto } from "../types/product";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SearchX, ShoppingCart } from "lucide-react";
 import { useCart } from "../hooks/useCart";
+import { useProducts } from "../hooks/useProducts";
 import Loading from "../components/Loading/Loading";
-
-
+import EmptyState from "../components/EmptyState/EmptyState";
 
 export default function Search() {
-  
   const location = useLocation();
   const navigate = useNavigate();
   const { adicionarItem } = useCart();
+  const { products: produtos, loading, error } = useProducts();
   const termoBusca = location.state?.termoBusca || "";
-  const [produtos, setProdutos] = useState<Produto[]>([]);
-  const [loading, setLoading] = useState(true);
   
-  const produtosFiltrados = produtos.filter(p =>
-    p.nome.toLowerCase().includes(termoBusca.toLowerCase())
-  );
+  const produtosFiltrados = useMemo(() => {
+    if (!termoBusca.trim()) return produtos;
+    return produtos.filter(p =>
+      p.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
+      p.categoria_nome.toLowerCase().includes(termoBusca.toLowerCase())
+    );
+  }, [produtos, termoBusca]);
 
   const showDetails = (product: Produto) => {
     navigate("/Product", { state: product });
   };
 
-  useEffect(() => {
-    async function fetchProdutos() {
-      try {
-        setLoading(true);
-        const dados = await fetch("http://localhost:3001/api/produtos");
-        const dadosJson: ProductFromAPI[] = await dados.json();
-        const produtosAdaptados = dadosJson.map(adaptProductFromAPI);
-        setProdutos(produtosAdaptados);
-        
-      } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProdutos();
-  }, []);
-
   // Tela de carregamento
   if (loading) {
-    return <Loading message="Carregando produtos..." />;
+    return <Loading message="Buscando produtos..." />;
+  }
+
+  // Se houver erro
+  if (error) {
+    return <EmptyState title="Erro ao buscar produtos" message={error} />;
   }
 
   return (

@@ -17,6 +17,11 @@ Sistema de display de produtos para ótica desenvolvido em React + TypeScript + 
 
 
 ## 📦 Instalação
-```bash
+cd backend
+npm install
+npm run dev
+
+## Em outro cmd
+cd frontend
 npm install
 npm run dev

@@ -1,47 +1,28 @@
-import { useEffect, useState } from "react";
-import type { Produto, ProductFromAPI } from "../types/product";
-import { adaptProductFromAPI } from "../types/product";
+import type { Produto } from "../types/product";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
+import { useProducts } from "../hooks/useProducts";
 import { ShoppingCart } from "lucide-react";
 import Loading from "../components/Loading/Loading";
 import EmptyState from "../components/EmptyState/EmptyState";
 
 export default function Home() {
-
   const navigate = useNavigate();
   const { adicionarItem } = useCart();
-  const [produtos, setProdutos] = useState<Produto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const url = "http://localhost:3001/api/produtos";
+  const { products: produtos, loading, error } = useProducts();
   
-  const showDetails = (product: Produto) =>{
-    navigate("/Product", { state:  product  })
-}
-
-
-  useEffect(() => {
-    async function fetchProdutos() {
-      try {
-        setLoading(true);
-        const dados = await fetch(url);
-        const dadosJson: ProductFromAPI[] = await dados.json();
-        // Converte os dados da API para o formato do frontend
-        const produtosAdaptados = dadosJson.map(adaptProductFromAPI);
-        setProdutos(produtosAdaptados);
-        
-      } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProdutos();
-  }, []);
+  const showDetails = (product: Produto) => {
+    navigate("/Product", { state: product });
+  }
 
   // Tela de carregamento
   if (loading) {
     return <Loading message="Carregando produtos..." />;
+  }
+
+  // Se houver erro
+  if (error) {
+    return <EmptyState title="Erro ao carregar produtos" message={error} />;
   }
 
   // Se a API retornar vazio após carregar, mostra mensagem
@@ -69,7 +50,7 @@ export default function Home() {
             className="bg-white border border-yellow-300 rounded-xl shadow-lg p-6 flex flex-col items-center hover:shadow-2xl transition-shadow duration-300"
           >
             <img
-              //src={produtos.imagem}
+              src={p.imagem}
               alt={p.nome}
               className="h-40 w-40 object-cover rounded-lg mb-4 border-4 border-yellow-400"
             />
