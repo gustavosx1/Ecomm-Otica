@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
@@ -10,8 +10,15 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirecionar se já está logado
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +26,15 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      const { error } = await signIn(email, password);
+      if (error) {
+        if (error.message === "Email not confirmed") {
+          setError("Por favor, confirme seu email antes de fazer login. Verifique sua caixa de entrada.");
+        } else {
+          setError(error.message);
+        }
+        return;
+      }
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');

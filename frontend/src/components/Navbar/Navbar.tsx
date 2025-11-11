@@ -34,10 +34,9 @@ export default function Navbar() {
     <nav className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
           <div className="max-w-5x2 mx-auto px-4 flex items-center justify-between h-20">
               {/* Logo */}
-              <div className="flex items-center justify-start space-x-2 flex-shrink-0">
+              <Link to="/" className="flex items-center justify-start space-x-2 flex-shrink-0">
                 <img src={logo} alt="logo" className="h-16 w-auto object-contain" />
-                 
-                </div>
+              </Link>
 
               {/* Botão Mobile */}
               <button
@@ -86,28 +85,39 @@ export default function Navbar() {
           
           {/* Auth buttons */}
           {user ? (
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600 hidden md:block">
-                Olá, {user.email?.split('@')[0]}
-              </span>
+            <div className="flex items-center space-x-4">
+              {/* Informações do usuário */}
+              <div className="hidden md:flex items-center space-x-2">
+                <div className="flex flex-col items-end">
+                  <span className="text-sm font-medium text-gray-800">
+                    {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {user.email}
+                  </span>
+                </div>
+                <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
+                  <User size={16} className="text-white" />
+                </div>
+              </div>
+
+              {/* Botão de logout */}
               <button
                 onClick={handleSignOut}
-                className="flex items-center space-x-1 text-gray-700 hover:text-amber-600 transition-colors duration-200"
+                className="flex items-center space-x-1 text-gray-700 hover:text-red-600 transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-red-50"
               >
                 <LogOut size={20} />
                 <span className="hidden md:block">Sair</span>
               </button>
             </div>
           ) : (
-            <div className="flex items-center space-x-2">
-              <Link
-                to="/login"
-                className="flex items-center space-x-1 text-gray-700 hover:text-amber-600 transition-colors duration-200"
-              >
-                <User size={20} />
-                <span className="hidden md:block">Entrar</span>
-              </Link>
-            </div>
+            <Link
+              to="/login"
+              className="flex items-center space-x-1 text-white bg-yellow-500 hover:bg-yellow-600 transition-colors duration-200 px-4 py-2 rounded-lg font-medium"
+            >
+              <User size={20} />
+              <span className="hidden md:block">Entrar</span>
+            </Link>
           )}
 
           <Link to="/carrinho" className="relative">
